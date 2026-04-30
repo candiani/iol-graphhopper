@@ -37,10 +37,10 @@ graphhopper:
       custom_model_files: [car.json]
 
     - name: foot
-      custom_model_files: [foot.json, foot_elevation.json]
+      custom_model_files: [foot.json]
 
     - name: bike
-      custom_model_files: [bike.json, bike_elevation.json]
+      custom_model_files: [bike.json]
 #
 #    - name: racingbike
 #      custom_model_files: [racingbike.json, bike_elevation.json]
@@ -83,7 +83,7 @@ graphhopper:
   #           hazmat,hazmat_tunnel,hazmat_water,lanes,osm_way_id,toll,track_type,mtb_rating,hike_rating,horse_rating,
   #           country,curvature,average_slope,max_slope,car_temporal_access,bike_temporal_access,foot_temporal_access
   ######graph.encoded_values: car_access, car_average_speed,foot_access, hike_rating, foot_priority, foot_average_speed, average_slope
-  graph.encoded_values: car_access,car_average_speed,road_class,road_class_link,road_environment,max_speed,road_access,ferry_speed,surface,smoothness,max_width,max_height,max_weight,max_weight_except,hgv,max_axle_load,max_length,hazmat,hazmat_tunnel,hazmat_water,lanes,osm_way_id,toll,track_type,mtb_rating,hike_rating,horse_rating,country,curvature,average_slope,max_slope,car_temporal_access,bike_temporal_access,foot_temporal_access,urban_density,foot_access,foot_priority,foot_average_speed,foot_road_access,bike_priority,bike_road_access,bike_access,roundabout,bike_average_speed,bike_network
+  graph.encoded_values: car_access,car_average_speed,road_class,road_class_link,road_environment,max_speed,road_access,ferry_speed,surface,smoothness,max_width,max_height,max_weight,max_weight_except,hgv,max_axle_load,max_length,hazmat,hazmat_tunnel,hazmat_water,lanes,osm_way_id,toll,track_type,mtb_rating,hike_rating,horse_rating,country,curvature,car_temporal_access,bike_temporal_access,foot_temporal_access,urban_density,foot_access,foot_priority,foot_average_speed,foot_road_access,bike_priority,bike_road_access,bike_access,roundabout,bike_average_speed,bike_network
   
   #### Speed, hybrid and flexible mode ####
 
@@ -145,13 +145,13 @@ graphhopper:
 
   # This feature allows classifying roads into 'rural', 'residential' and 'city' areas (encoded value 'urban_density')
   # Use 1 or more threads to enable the feature
-  graph.urban_density.threads: 1
+  graph.urban_density.threads: 4
   # Use higher/lower sensitivities if too little/many roads fall into the according categories.
   # Using smaller radii will speed up the classification, but only change these values if you know what you are doing.
   # If you do not need the (rather slow) city classification set city_radius to zero.
   #graph.urban_density.residential_radius: 400
   #graph.urban_density.residential_sensitivity: 6000
-  #graph.urban_density.city_radius: 1500
+  graph.urban_density.city_radius: 0
   #graph.urban_density.city_sensitivity: 1000
 
 
