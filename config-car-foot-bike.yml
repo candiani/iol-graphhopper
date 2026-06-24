@@ -151,7 +151,7 @@ graphhopper:
   # If you do not need the (rather slow) city classification set city_radius to zero.
   #graph.urban_density.residential_radius: 400
   #graph.urban_density.residential_sensitivity: 6000
-  graph.urban_density.city_radius: 0
+  #graph.urban_density.city_radius: 0
   #graph.urban_density.city_sensitivity: 1000
 
 
@@ -223,7 +223,13 @@ server:
     # increase GET request limit - not necessary if /maps UI is not used or used without custom models
     max_request_header_size: 50k
   request_log:
-      appenders: []
+      appenders:
+        - type: file
+          current_log_filename: logs/access.log
+          archive: true
+          archived_log_filename_pattern: logs/access-%d.log.gz
+          archived_file_count: 14
+          time_zone: UTC
   admin_connectors:
   - type: http
     port: 9000

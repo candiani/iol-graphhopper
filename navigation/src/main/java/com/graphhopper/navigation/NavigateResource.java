@@ -155,7 +155,9 @@ public class NavigateResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doPost(@NotNull GHRequest request, @Context HttpServletRequest httpReq) {
+    public Response doPost(@NotNull GHRequest request,
+                           @QueryParam("type") @DefaultValue("") String type,
+                           @Context HttpServletRequest httpReq) {
         StopWatch sw = new StopWatch().start();
 
         // do not use routing.snap_preventions_default here as they are not always good for navigation
@@ -181,7 +183,7 @@ public class NavigateResource {
             throw new IllegalArgumentException("Do not set 'points_encoded'. Per default it is true.");
         if (request.getHints().has("points_encoded_multiplier"))
             throw new IllegalArgumentException("Do not set 'points_encoded_multiplier'. Per default it is 1e6.");
-        if (!request.getHints().getString("type", "").equals("mapbox"))
+        if (!getRequestType(request, type).equals("mapbox"))
             throw new IllegalArgumentException("Currently type=mapbox required.");
 
         if (request.getPathDetails().isEmpty()) {
@@ -191,6 +193,7 @@ public class NavigateResource {
                 request.setPathDetails(List.of(INTERSECTION));
         }
 
+        prepareNavigationRequest(request);
         GHResponse ghResponse = graphHopper.route(request);
 
         double took = sw.stop().getMillisDouble();
@@ -287,5 +290,15 @@ public class NavigateResource {
             }
         }
         return bearings;
+    }
+
+    static String getRequestType(GHRequest request, String queryType) {
+        String requestType = request.getHints().getString("type", "");
+        return requestType.isEmpty() ? queryType : requestType;
+    }
+
+    static void prepareNavigationRequest(GHRequest request) {
+        if (!request.getHeadings().isEmpty())
+            request.putHint(Parameters.CH.DISABLE, true);
     }
 }

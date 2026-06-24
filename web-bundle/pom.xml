@@ -9,6 +9,7 @@
     <properties>
         <graphhopper-maps.version>0.0.0-a156c15
         </graphhopper-maps.version>
+        <graphhopper.maps.bundle.skip>false</graphhopper.maps.bundle.skip>
     </properties>
     <name>GraphHopper Dropwizard Bundle</name>
     <description>Use the GraphHopper routing engine as a web-service</description>
@@ -120,6 +121,9 @@
         <plugins>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <configuration>
+                    <skip>${graphhopper.maps.bundle.skip}</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <id>download graphhopper maps</id>
