@@ -1,0 +1,19 @@
+// Experimental short car model for the next cache.
+// Keeps distance as the main preference, but uses the same speed calibration as
+// car_next.json to prefer faster roads a bit more strongly.
+{
+  "distance_influence": 300,
+  "priority": [
+    { "if": "!car_access && (!backward_car_access || roundabout)", "multiply_by": "0" },
+    { "else_if": "!car_access && backward_car_access", "multiply_by": "0.01" },
+    { "if": "road_access == DESTINATION || road_access == PRIVATE", "multiply_by": "0.1" }
+  ],
+  "speed": [
+    { "if": "road_environment == FERRY", "limit_to": "ferry_speed" },
+    { "else_if": "road_class == MOTORWAY", "limit_to": "car_average_speed * 1.08" },
+    { "else_if": "road_class == TRUNK", "limit_to": "car_average_speed * 1.03" },
+    { "else_if": "urban_density == CITY", "limit_to": "car_average_speed * 0.65" },
+    { "else_if": "urban_density == RESIDENTIAL", "limit_to": "car_average_speed * 0.75" },
+    { "else": "", "limit_to": "car_average_speed * 0.9" }
+  ]
+}

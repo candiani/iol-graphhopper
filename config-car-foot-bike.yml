@@ -36,11 +36,23 @@ graphhopper:
         u_turn_costs: 60
       custom_model_files: [car.json]
 
+    - name: car_short
+      turn_costs:
+        vehicle_types: [motorcar, motor_vehicle]
+        u_turn_costs: 60
+      custom_model_files: [car_short.json]
+
     - name: foot
       custom_model_files: [foot.json]
 
+    - name: foot_short
+      custom_model_files: [foot_short.json]
+
     - name: bike
       custom_model_files: [bike.json]
+
+    - name: bike_short
+      custom_model_files: [bike_short.json]
 #
 #    - name: racingbike
 #      custom_model_files: [racingbike.json, bike_elevation.json]
@@ -60,8 +72,11 @@ graphhopper:
   # usage) and the routing will also be slower than with `turn_costs: false`.
   profiles_ch:
     - profile: car
+    - profile: car_short
     - profile: foot
+    - profile: foot_short
     - profile: bike
+    - profile: bike_short
 
   # Hybrid mode:
   # Similar to speed mode, the hybrid mode (Landmarks, LM) also speeds up routing by doing calculating auxiliary data

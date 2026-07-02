@@ -28,7 +28,7 @@ machine. This will also install a web API that can be used in many programming l
 
 #### Configuration
 
-You can change several aspects either programmatically or in the [configuration](../config-example.yml).
+You can change several aspects either programmatically or in the [configuration](../config-car-foot-bike.yml).
 The configuration of routing profiles is documented [here](./core/profiles.md).
 The elevation configuration is separately documented [here](./core/elevation.md).
 

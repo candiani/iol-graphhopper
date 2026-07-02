@@ -1,0 +1,13 @@
+// Custom model for shorter car routes.
+// Compared to car.json this model avoids strong road_class bonuses and increases
+// distance_influence, so the route calculation penalizes extra distance more.
+{
+  "distance_influence": 300,
+  "priority": [
+    { "if": "!car_access", "multiply_by": "0.01" },
+    { "if": "road_access == DESTINATION || road_access == PRIVATE", "multiply_by": "0.1" }
+  ],
+  "speed": [
+    { "if": "true", "limit_to": "car_average_speed * 0.9" }
+  ]
+}

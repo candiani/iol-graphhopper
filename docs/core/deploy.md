@@ -8,7 +8,7 @@ See the [installation section](../../README.md#installation) on how to start the
 
 Then you can embed these commands in a shell script and use this from e.g. [Docker](../../README.md#docker) or systemd.
 
-For production usage you have a web service included where you can use [this configuration](https://raw.githubusercontent.com/graphhopper/graphhopper/master/config-example.yml)
+For production usage you have a web service included where you can use the root `config-car-foot-bike.yml` configuration.
 Increase the -Xmx/-Xms parameters of the command accordingly.
 
 You can reduce the memory requirements for the import step when you run the `import` command explicitly before the `server` command:

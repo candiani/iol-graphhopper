@@ -4,7 +4,8 @@ graphhopper:
   ##datareader.file: "nord-ovest-latest.osm.pbf"
   datareader.file: "italy-latest.osm.pbf"
   # Local folder used by graphhopper to store its data
-  graph.location: graph-cache
+  graph.location: graph-cache-master-it-next
+  graph.way_point_max_distance: 0
 
 
   ##### Routing Profiles ####
@@ -33,14 +34,26 @@ graphhopper:
     - name: car
       turn_costs:
         vehicle_types: [motorcar, motor_vehicle]
-        u_turn_costs: 60
-      custom_model_files: [car.json]
+        u_turn_costs: 300
+      custom_model_files: [car_next.json]
+
+    - name: car_short
+      turn_costs:
+        vehicle_types: [motorcar, motor_vehicle]
+        u_turn_costs: 300
+      custom_model_files: [car_short_next.json]
 
     - name: foot
       custom_model_files: [foot.json]
 
-      #    - name: bike
-      #custom_model_files: [bike.json, bike_elevation.json]
+    - name: foot_short
+      custom_model_files: [foot_short.json]
+
+    - name: bike
+      custom_model_files: [bike.json]
+
+    - name: bike_short
+      custom_model_files: [bike_short.json]
 #
 #    - name: racingbike
 #      custom_model_files: [racingbike.json, bike_elevation.json]
@@ -60,7 +73,11 @@ graphhopper:
   # usage) and the routing will also be slower than with `turn_costs: false`.
   profiles_ch:
     - profile: car
+    - profile: car_short
     - profile: foot
+    - profile: foot_short
+    - profile: bike
+    - profile: bike_short
 
   # Hybrid mode:
   # Similar to speed mode, the hybrid mode (Landmarks, LM) also speeds up routing by doing calculating auxiliary data
@@ -82,7 +99,7 @@ graphhopper:
   #           hazmat,hazmat_tunnel,hazmat_water,lanes,osm_way_id,toll,track_type,mtb_rating,hike_rating,horse_rating,
   #           country,curvature,average_slope,max_slope,car_temporal_access,bike_temporal_access,foot_temporal_access
   ######graph.encoded_values: car_access, car_average_speed,foot_access, hike_rating, foot_priority, foot_average_speed, average_slope
-  graph.encoded_values: car_access,car_average_speed,road_class,road_class_link,road_environment,max_speed,road_access,ferry_speed,surface,smoothness,max_width,max_height,max_weight,max_weight_except,hgv,max_axle_load,max_length,hazmat,hazmat_tunnel,hazmat_water,lanes,osm_way_id,toll,track_type,mtb_rating,hike_rating,horse_rating,country,curvature,car_temporal_access,bike_temporal_access,foot_temporal_access,urban_density,foot_access,foot_priority,foot_average_speed,foot_road_access
+  graph.encoded_values: car_access,car_average_speed,road_class,road_class_link,road_environment,max_speed,road_access,ferry_speed,surface,smoothness,max_width,max_height,max_weight,max_weight_except,hgv,max_axle_load,max_length,hazmat,hazmat_tunnel,hazmat_water,lanes,osm_way_id,toll,track_type,mtb_rating,hike_rating,horse_rating,country,curvature,car_temporal_access,bike_temporal_access,foot_temporal_access,urban_density,foot_access,foot_priority,foot_average_speed,foot_road_access,bike_priority,bike_road_access,bike_access,roundabout,bike_average_speed,bike_network
   
   #### Speed, hybrid and flexible mode ####
 
@@ -150,7 +167,7 @@ graphhopper:
   # If you do not need the (rather slow) city classification set city_radius to zero.
   #graph.urban_density.residential_radius: 400
   #graph.urban_density.residential_sensitivity: 6000
-  graph.urban_density.city_radius: 0
+  #graph.urban_density.city_radius: 0
   #graph.urban_density.city_sensitivity: 1000
 
 
@@ -216,16 +233,22 @@ graphhopper:
 server:
   application_connectors:
   - type: http
-    port: 8989
+    port: 8998
     # for security reasons bind to localhost
     bind_host: localhost
     # increase GET request limit - not necessary if /maps UI is not used or used without custom models
     max_request_header_size: 50k
   request_log:
-      appenders: []
+      appenders:
+        - type: file
+          current_log_filename: logs/access.log
+          archive: true
+          archived_log_filename_pattern: logs/access-%d.log.gz
+          archived_file_count: 14
+          time_zone: UTC
   admin_connectors:
   - type: http
-    port: 8990
+    port: 9001
     bind_host: localhost
 # See https://www.dropwizard.io/en/latest/manual/core.html#logging
 logging:

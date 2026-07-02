@@ -16,7 +16,7 @@ git checkout master # if you prefer a less moving branch you can use e.g. 7.x
 mvn clean install -DskipTests
 # start GraphHopper and before download the road data
 wget http://download.geofabrik.de/europe/germany/berlin-latest.osm.pbf
-java -Ddw.graphhopper.datareader.file=berlin-latest.osm.pbf -jar web/target/graphhopper-web-*.jar server config-example.yml
+java -Ddw.graphhopper.datareader.file=berlin-latest.osm.pbf -jar web/target/graphhopper-web-*.jar server config-car-foot-bike.yml
 # This does the following things:
 # - it creates routable files for graphhopper in the folder graph-data (see the config.yml)
 # - it creates data for a special routing algorithm to improve query speed. (this and the previous step is skipped, if the graph-data folder is already present)

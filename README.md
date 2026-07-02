@@ -107,9 +107,8 @@ To install the [GraphHopper Maps](https://graphhopper.com/maps/) UI and the web 
 
 ```bash
 wget https://repo1.maven.org/maven2/com/graphhopper/graphhopper-web/11.0/graphhopper-web-11.0.jar \
-  https://raw.githubusercontent.com/graphhopper/graphhopper/11.x/config-example.yml \
   http://download.geofabrik.de/europe/germany/berlin-latest.osm.pbf
-java -D"dw.graphhopper.datareader.file=berlin-latest.osm.pbf" -jar graphhopper*.jar server config-example.yml
+java -D"dw.graphhopper.datareader.file=berlin-latest.osm.pbf" -jar graphhopper*.jar server config-car-foot-bike.yml
 ```
 
 After a while you see a log message with 'Server - Started', then go to http://localhost:8989/ and

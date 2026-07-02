@@ -44,3 +44,5 @@ local.properties
 /graph-cache
 package-lock.json
 .vscode/
+graph-cache-master-it/
+graph-cache-master-it-next/

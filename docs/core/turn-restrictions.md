@@ -39,7 +39,7 @@ preparation should be run using e.g. `profiles_ch`, just like when you use the '
 You can also specify a time penalty for taking u-turns in the profile (turning from one road back to the same road at a junction).
 Note, that this time-penalty only works reasonably when your weighting is time-based (like "fastest"). To use u-turn
 costs with speed mode you need to specify the time penalty for each u-turn in the turn_costs configuration:
-`u_turn_costs: 60`. See `config-example.yml` for further details regarding these configurations.
+`u_turn_costs: 60`. See `config-car-foot-bike.yml` for further details regarding these configurations.
 
 To disable the 'speed mode' per request you can add `ch.disable=true` and choose the value of `u_turn_costs` freely in the request.
 
@@ -56,4 +56,3 @@ Another example, using the *except* tag, means only *bicycle* are allowed to tur
 > type=restriction  
 > restriction=no_left_turn  
 > except=bicycle
-
