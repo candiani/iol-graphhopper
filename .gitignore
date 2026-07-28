@@ -45,3 +45,9 @@ local.properties
 package-lock.json
 .vscode/
 .claude/
+
+# Python caches and generated route-test reports
+**/__pycache__/
+*.py[cod]
+/tools/reports/*
+!/tools/reports/.gitkeep
