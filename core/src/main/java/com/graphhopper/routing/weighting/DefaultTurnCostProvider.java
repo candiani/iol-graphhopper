@@ -37,10 +37,18 @@ public class DefaultTurnCostProvider implements TurnCostProvider {
     private final BaseGraph graph;
     private final EdgeIntAccess edgeIntAccess;
     private final CustomWeighting.TurnPenaltyMapping turnPenaltyMapping;
+    private final CustomWeighting.TurnPenaltyMapping turnTimeMapping;
 
     public DefaultTurnCostProvider(BooleanEncodedValue turnRestrictionEnc,
                                    Graph graph, TurnCostsConfig tcConfig,
                                    CustomWeighting.TurnPenaltyMapping turnPenaltyMapping) {
+        this(turnRestrictionEnc, graph, tcConfig, turnPenaltyMapping, null);
+    }
+
+    public DefaultTurnCostProvider(BooleanEncodedValue turnRestrictionEnc,
+                                   Graph graph, TurnCostsConfig tcConfig,
+                                   CustomWeighting.TurnPenaltyMapping turnPenaltyMapping,
+                                   CustomWeighting.TurnPenaltyMapping turnTimeMapping) {
         this.uTurnCostsInt = tcConfig.getUTurnCosts();
         if (uTurnCostsInt < 0 && uTurnCostsInt != INFINITE_U_TURN_COSTS) {
             throw new IllegalArgumentException("u-turn costs must be positive, or equal to " + INFINITE_U_TURN_COSTS + " (=infinite costs)");
@@ -57,6 +65,7 @@ public class DefaultTurnCostProvider implements TurnCostProvider {
         this.edgeIntAccess = graph.getBaseGraph().getEdgeAccess();
 
         this.turnPenaltyMapping = turnPenaltyMapping;
+        this.turnTimeMapping = turnTimeMapping;
     }
 
     @Override
@@ -79,12 +88,12 @@ public class DefaultTurnCostProvider implements TurnCostProvider {
 
     @Override
     public long calcTurnMillis(int inEdge, int viaNode, int outEdge) {
-        // Making a proper assumption about the turn time is very hard. Assuming zero is the
-        // simplest way to deal with this. This also means the u-turn time is zero. Provided that
-        // the u-turn weight is large enough, u-turns only occur in special situations like curbsides
-        // pointing to the end of dead-end streets where it is unclear if a finite u-turn time would
-        // be a good choice.
-        return 0;
+        if (turnTimeMapping == null || !EdgeIterator.Edge.isValid(inEdge) || !EdgeIterator.Edge.isValid(outEdge))
+            return 0;
+        double turnSeconds = turnTimeMapping.get(graph, edgeIntAccess, inEdge, viaNode, outEdge);
+        if (!Double.isFinite(turnSeconds) || turnSeconds < 0)
+            throw new IllegalArgumentException("Turn time must be finite and non-negative, but was " + turnSeconds);
+        return Math.round(turnSeconds * 1000);
     }
 
     @Override

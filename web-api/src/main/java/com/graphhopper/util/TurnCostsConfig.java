@@ -10,6 +10,7 @@ public class TurnCostsConfig {
     public static final int INFINITE_U_TURN_COSTS = -1;
 
     private int uTurnCosts = INFINITE_U_TURN_COSTS;
+    private int trafficSignalTime;
     private List<String> vehicleTypes;
     private boolean allowTurnPenaltyInRequest;
 
@@ -36,6 +37,8 @@ public class TurnCostsConfig {
 
     public TurnCostsConfig(TurnCostsConfig copy) {
         uTurnCosts = copy.uTurnCosts;
+        trafficSignalTime = copy.trafficSignalTime;
+        allowTurnPenaltyInRequest = copy.allowTurnPenaltyInRequest;
         if (copy.vehicleTypes != null)
             vehicleTypes = new ArrayList<>(copy.vehicleTypes);
     }
@@ -94,8 +97,20 @@ public class TurnCostsConfig {
         return uTurnCosts;
     }
 
+    public TurnCostsConfig setTrafficSignalTime(int trafficSignalTime) {
+        if (trafficSignalTime < 0)
+            throw new IllegalArgumentException("traffic_signal_time must not be negative");
+        this.trafficSignalTime = trafficSignalTime;
+        return this;
+    }
+
+    @JsonProperty("traffic_signal_time")
+    public int getTrafficSignalTime() {
+        return trafficSignalTime;
+    }
+
     @Override
     public String toString() {
-        return "uTurnCosts=" + uTurnCosts + ", vehicleTypes=" + vehicleTypes;
+        return "uTurnCosts=" + uTurnCosts + ", trafficSignalTime=" + trafficSignalTime + ", vehicleTypes=" + vehicleTypes;
     }
 }

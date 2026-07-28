@@ -34,6 +34,11 @@ public class OSMCrossingParser implements TagParser {
                 return;
             }
 
+            if ("traffic_signals".equals(tags.get("highway"))) {
+                crossingEnc.setEnum(false, edgeId, edgeIntAccess, Crossing.TRAFFIC_SIGNALS);
+                return;
+            }
+
             String crossingSignals = (String) tags.get("crossing:signals");
             if ("yes".equals(crossingSignals)) {
                 crossingEnc.setEnum(false, edgeId, edgeIntAccess, Crossing.TRAFFIC_SIGNALS);

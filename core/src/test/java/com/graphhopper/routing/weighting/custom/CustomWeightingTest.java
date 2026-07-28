@@ -4,6 +4,8 @@ import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.graphhopper.json.Statement;
 import com.graphhopper.reader.ReaderWay;
+import com.graphhopper.config.Profile;
+import com.graphhopper.routing.DefaultWeightingFactory;
 import com.graphhopper.routing.ev.*;
 import com.graphhopper.routing.querygraph.VirtualEdgeIteratorState;
 import com.graphhopper.routing.util.EncodingManager;
@@ -15,7 +17,10 @@ import com.graphhopper.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static com.graphhopper.json.Statement.*;
+import static com.graphhopper.json.Statement.Op.ADD;
 import static com.graphhopper.json.Statement.Op.LIMIT;
 import static com.graphhopper.json.Statement.Op.MULTIPLY;
 import static com.graphhopper.routing.ev.RoadClass.*;
@@ -424,6 +429,36 @@ class CustomWeightingTest {
         EdgeIteratorState edge = graph.edge(0, 1).set(avSpeedEnc, 60, 60).setDistance(100);
         assertEquals(60 + 400, GHUtility.calcWeightWithTurnWeight(weighting, edge, false, 0), 1.e-6);
         assertEquals(6 * 1000, GHUtility.calcMillisWithTurnMillis(weighting, edge, false, 0), 1.e-6);
+    }
+
+    @Test
+    public void calcWeightAndTime_trafficSignal() {
+        DecimalEncodedValue signalSpeedEnc = VehicleSpeed.create("signal_car", 5, 5, true);
+        EnumEncodedValue<Crossing> crossingEnc = Crossing.create();
+        BooleanEncodedValue signalTurnRestrictionEnc = TurnRestriction.create("signal_car");
+        EncodingManager em = new EncodingManager.Builder()
+                .add(signalSpeedEnc)
+                .add(crossingEnc)
+                .addTurnCostEncodedValue(signalTurnRestrictionEnc)
+                .build();
+        BaseGraph graph = new BaseGraph.Builder(em).withTurnCosts(true).create();
+        CustomModel customModel = createSpeedCustomModel(signalSpeedEnc)
+                .addToTurnPenalty(If("prev_crossing == TRAFFIC_SIGNALS && crossing == TRAFFIC_SIGNALS", ADD, "5"));
+        Profile profile = new Profile("signal_car")
+                .setTurnCostsConfig(new TurnCostsConfig().setVehicleTypes(List.of("motorcar")).setTrafficSignalTime(20))
+                .setCustomModel(customModel);
+        Weighting weighting = new DefaultWeightingFactory(graph, em).createWeighting(profile, new PMap(), false);
+
+        EdgeIteratorState edge1 = graph.edge(0, 1).setDistance(100).set(signalSpeedEnc, 60).set(crossingEnc, Crossing.MISSING);
+        EdgeIteratorState edge2 = graph.edge(1, 2).setDistance(100).set(signalSpeedEnc, 60).set(crossingEnc, Crossing.TRAFFIC_SIGNALS);
+        EdgeIteratorState edge3 = graph.edge(2, 3).setDistance(100).set(signalSpeedEnc, 60).set(crossingEnc, Crossing.TRAFFIC_SIGNALS);
+        EdgeIteratorState edge4 = graph.edge(3, 4).setDistance(100).set(signalSpeedEnc, 60).set(crossingEnc, Crossing.MISSING);
+
+        assertEquals(50, weighting.calcTurnWeight(edge2.getEdge(), 2, edge3.getEdge()));
+        assertEquals(20_000, weighting.calcTurnMillis(edge1.getEdge(), 1, edge2.getEdge()));
+        assertEquals(26_000, GHUtility.calcMillisWithTurnMillis(weighting, edge2, false, edge1.getEdge()));
+        assertEquals(0, weighting.calcTurnMillis(edge2.getEdge(), 2, edge3.getEdge()));
+        assertEquals(0, weighting.calcTurnMillis(edge3.getEdge(), 3, edge4.getEdge()));
     }
 
     @Test

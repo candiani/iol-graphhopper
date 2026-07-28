@@ -38,6 +38,10 @@ class OSMCrossingParserTest {
         EdgeIntAccess edgeIntAccess = new ArrayEdgeIntAccess(1);
         int edgeId = 0;
         parser.handleWayTags(edgeId, edgeIntAccess,
+                createReader(new PMap().putObject("highway", "traffic_signals").toMap()), null);
+        assertEquals(Crossing.TRAFFIC_SIGNALS, crossingEV.getEnum(false, edgeId, edgeIntAccess));
+
+        parser.handleWayTags(edgeId, edgeIntAccess = new ArrayEdgeIntAccess(1),
                 createReader(new PMap().putObject("crossing", "traffic_signals").toMap()), null);
         assertEquals(Crossing.TRAFFIC_SIGNALS, crossingEV.getEnum(false, edgeId, edgeIntAccess));
 

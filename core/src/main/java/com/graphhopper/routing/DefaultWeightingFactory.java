@@ -32,6 +32,9 @@ import com.graphhopper.util.PMap;
 import com.graphhopper.util.Parameters;
 import com.graphhopper.util.TurnCostsConfig;
 
+import static com.graphhopper.json.Statement.If;
+import static com.graphhopper.json.Statement.Op.ADD;
+import static com.graphhopper.json.Statement.Op.LIMIT;
 import static com.graphhopper.routing.weighting.TurnCostProvider.NO_TURN_COST_PROVIDER;
 import static com.graphhopper.routing.weighting.custom.CustomModelParser.createWeightingParameters;
 import static com.graphhopper.util.Helper.toLowerCase;
@@ -77,7 +80,9 @@ public class DefaultWeightingFactory implements WeightingFactory {
                     throw new IllegalArgumentException("Cannot find turn restriction encoded value for " + profile.getName());
                 int uTurnCosts = hints.getInt(Parameters.Routing.U_TURN_COSTS, profile.getTurnCostsConfig().getUTurnCosts());
                 TurnCostsConfig tcConfig = new TurnCostsConfig(profile.getTurnCostsConfig()).setUTurnCosts(uTurnCosts);
-                turnCostProvider = new DefaultTurnCostProvider(turnRestrictionEnc, graph, tcConfig, parameters.getTurnPenaltyMapping());
+                CustomWeighting.TurnPenaltyMapping turnTimeMapping = createTurnTimeMapping(tcConfig);
+                turnCostProvider = new DefaultTurnCostProvider(turnRestrictionEnc, graph, tcConfig,
+                        parameters.getTurnPenaltyMapping(), turnTimeMapping);
             } else {
                 if (!mergedCustomModel.getTurnPenalty().isEmpty() && !disableTurnCosts)
                     throw new IllegalArgumentException("The turn_penalty feature is not supported for " + profile.getName() + ". You have to enable this in 'turn_costs' in config.yml.");
@@ -100,5 +105,15 @@ public class DefaultWeightingFactory implements WeightingFactory {
             throw new IllegalArgumentException("Weighting '" + weightingStr + "' not supported");
 
         return weighting;
+    }
+
+    private CustomWeighting.TurnPenaltyMapping createTurnTimeMapping(TurnCostsConfig turnCostsConfig) {
+        if (turnCostsConfig.getTrafficSignalTime() == 0)
+            return null;
+        CustomModel timeModel = new CustomModel()
+                .addToSpeed(If("true", LIMIT, "1"))
+                .addToTurnPenalty(If("prev_crossing != TRAFFIC_SIGNALS && crossing == TRAFFIC_SIGNALS", ADD,
+                        Integer.toString(turnCostsConfig.getTrafficSignalTime())));
+        return createWeightingParameters(timeModel, encodingManager).getTurnPenaltyMapping();
     }
 }

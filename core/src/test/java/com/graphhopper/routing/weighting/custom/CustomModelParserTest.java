@@ -50,6 +50,7 @@ class CustomModelParserTest {
     DecimalEncodedValue avgSpeedEnc;
     EnumEncodedValue<Country> countryEnc;
     EnumEncodedValue<State> stateEnc;
+    EnumEncodedValue<Crossing> crossingEnc;
     double maxSpeed;
 
     public enum MyBus {
@@ -62,8 +63,9 @@ class CustomModelParserTest {
         avgSpeedEnc = VehicleSpeed.create("car", 5, 5, false);
         countryEnc = Country.create();
         stateEnc = State.create();
+        crossingEnc = Crossing.create();
         encodingManager = new EncodingManager.Builder().add(accessEnc).add(avgSpeedEnc).add(new EnumEncodedValue<>("bus", MyBus.class))
-                .add(stateEnc).add(countryEnc).add(MaxSpeed.create()).add(Surface.create()).add(RoadClass.create()).add(RoadEnvironment.create()).build();
+                .add(stateEnc).add(countryEnc).add(crossingEnc).add(MaxSpeed.create()).add(Surface.create()).add(RoadClass.create()).add(RoadEnvironment.create()).build();
         graph = new BaseGraph.Builder(encodingManager).create();
         roadClassEnc = encodingManager.getEnumEncodedValue(RoadClass.KEY, RoadClass.class);
         maxSpeed = 140;
@@ -361,6 +363,23 @@ class CustomModelParserTest {
         EdgeIteratorState edge3 = graph.edge(2, 3).setDistance(100).set(roadClassEnc, PRIMARY);
 
         assertEquals(100, turnPenaltyMapping.get(graph, graph.getEdgeAccess(), edge1.getEdge(), 1, edge2.getEdge()));
+        assertEquals(0, turnPenaltyMapping.get(graph, graph.getEdgeAccess(), edge2.getEdge(), 2, edge3.getEdge()));
+    }
+
+    @Test
+    void testTrafficSignalTurnPenalty() {
+        CustomModel customModel = new CustomModel();
+        customModel.addToSpeed(If("true", LIMIT, "100"));
+        customModel.addToTurnPenalty(If("prev_crossing == TRAFFIC_SIGNALS && crossing == TRAFFIC_SIGNALS", ADD, "5"));
+        CustomWeighting.TurnPenaltyMapping turnPenaltyMapping = CustomModelParser.createWeightingParameters(customModel, encodingManager).
+                getTurnPenaltyMapping();
+
+        BaseGraph graph = new BaseGraph.Builder(encodingManager).create();
+        EdgeIteratorState edge1 = graph.edge(0, 1).setDistance(100).set(crossingEnc, Crossing.TRAFFIC_SIGNALS);
+        EdgeIteratorState edge2 = graph.edge(1, 2).setDistance(100).set(crossingEnc, Crossing.TRAFFIC_SIGNALS);
+        EdgeIteratorState edge3 = graph.edge(2, 3).setDistance(100).set(crossingEnc, Crossing.MISSING);
+
+        assertEquals(5, turnPenaltyMapping.get(graph, graph.getEdgeAccess(), edge1.getEdge(), 1, edge2.getEdge()));
         assertEquals(0, turnPenaltyMapping.get(graph, graph.getEdgeAccess(), edge2.getEdge(), 2, edge3.getEdge()));
     }
 
