@@ -49,6 +49,8 @@ public class IsochroneExample {
         GraphHopper hopper = new GraphHopper();
         hopper.setOSMFile(ghLoc);
         hopper.setGraphHopperLocation("target/isochrone-graph-cache");
+        hopper.setEncodedValuesString("car_access, car_average_speed, road_access, road_class, road_environment, urban_density, max_speed, ferry_speed");
+        hopper.setUrbanDensityCalculation(400, 6000, 1500, 1000, 1);
         hopper.setProfiles(new Profile("car").setCustomModel(GHUtility.loadCustomModelFromJar("car.json")));
         hopper.importOrLoad();
         return hopper;
