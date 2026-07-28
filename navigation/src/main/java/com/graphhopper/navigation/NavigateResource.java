@@ -197,6 +197,7 @@ public class NavigateResource {
         if (!request.getHints().has(ROUNDABOUT_EXITS))
             request.getHints().putObject(ROUNDABOUT_EXITS, false); // same default as GET
 
+        prepareNavigationRequest(request);
         GHResponse ghResponse = graphHopper.route(request);
 
         double took = sw.stop().getMillisDouble();
@@ -271,5 +272,10 @@ public class NavigateResource {
             }
         }
         return bearings;
+    }
+
+    static void prepareNavigationRequest(GHRequest request) {
+        if (!request.getHeadings().isEmpty())
+            request.putHint(Parameters.CH.DISABLE, true);
     }
 }
