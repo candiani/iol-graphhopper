@@ -9,6 +9,7 @@
     <properties>
         <graphhopper-maps.version>0.0.0-93db4a9
         </graphhopper-maps.version>
+        <graphhopper.maps.bundle.skip>false</graphhopper.maps.bundle.skip>
     </properties>
     <name>GraphHopper Dropwizard Bundle</name>
     <description>Use the GraphHopper routing engine as a web-service</description>
@@ -125,6 +126,7 @@
                         <id>download graphhopper maps</id>
                         <phase>generate-resources</phase>
                         <configuration>
+                            <skip>${graphhopper.maps.bundle.skip}</skip>
                             <target>
                                 <mkdir dir="${basedir}/target"/>
                                 <get src="https://registry.npmjs.org/@graphhopper/graphhopper-maps-bundle/-/graphhopper-maps-bundle-${graphhopper-maps.version}.tgz"
@@ -140,6 +142,7 @@
                         <id>unzip maps bundle</id>
                         <phase>process-resources</phase>
                         <configuration>
+                            <skip>${graphhopper.maps.bundle.skip}</skip>
                             <target>
                                 <untar compression="gzip"
                                        src="${basedir}/target/graphhopper-maps-bundle-${graphhopper-maps.version}.tgz"
@@ -161,5 +164,4 @@
         </plugins>
     </build>
 </project>
-
 
