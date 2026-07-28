@@ -1,7 +1,10 @@
 {
   "turn_penalty": [
+    // traffic signals:
+    { "if": "prev_crossing == TRAFFIC_SIGNALS && crossing == TRAFFIC_SIGNALS", "add": "5" },
     // straight:
     { "if": "change_angle > -25 && change_angle < 25", "add":  "0" },
+    { "else_if": "change_angle <= -140 && change_angle >= -170", "add":  "60" },
     // right:
     { "else_if": "change_angle >= 25 && change_angle < 80", "add":  "3" },
     // sharp right:

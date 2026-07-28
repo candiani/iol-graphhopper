@@ -59,16 +59,37 @@
     { "else_if": "!car_access && backward_car_access", "limit_to": "0.01" }
   ],
   "speed": [
-    { "if": "road_environment == FERRY", "limit_to": "ferry_speed" },
-    { "else_if": "road_class == MOTORWAY", "limit_to": "car_average_speed * 0.95" },
-    { "else_if": "road_class == TRUNK", "limit_to": "car_average_speed * 0.92" },
-    { "else_if": "road_class == PRIMARY", "limit_to": "car_average_speed * 0.85" },
-    { "else_if": "road_class == SECONDARY", "limit_to": "car_average_speed * 0.82" },
-    { "else_if": "road_class == TERTIARY", "limit_to": "car_average_speed * 0.75" },
-    {
-      "else_if": "road_class == RESIDENTIAL || road_class == LIVING_STREET || road_class == PEDESTRIAN",
-      "limit_to": "car_average_speed * 0.65"
-    },
-    { "else": "", "limit_to": "car_average_speed * 0.75" }
-  ]
+  { "if": "road_environment == FERRY", "limit_to": "ferry_speed" },
+
+  { "else_if": "road_class == MOTORWAY",
+    "limit_to": "car_average_speed * 0.95" },
+
+  { "else_if": "road_class == TRUNK",
+    "limit_to": "car_average_speed * 0.92" },
+
+  { "else_if": "road_class == PRIMARY && urban_density == RURAL && car_average_speed >= 60",
+    "limit_to": "car_average_speed * 1.10" },
+
+  { "else_if": "road_class == PRIMARY && urban_density == RURAL",
+    "limit_to": "car_average_speed" },
+
+  { "else_if": "road_class == PRIMARY && urban_density == RESIDENTIAL",
+    "limit_to": "car_average_speed" },
+
+  { "else_if": "road_class == PRIMARY && urban_density == CITY",
+    "limit_to": "car_average_speed * 0.82" },
+
+  { "else_if": "road_class == SECONDARY",
+    "limit_to": "car_average_speed * 0.82" },
+
+  { "else_if": "road_class == TERTIARY",
+    "limit_to": "car_average_speed * 0.75" },
+
+  { "else_if": "road_class == RESIDENTIAL || road_class == LIVING_STREET || road_class == PEDESTRIAN",
+    "limit_to": "car_average_speed * 0.65" },
+
+  { "else": "", "limit_to": "car_average_speed * 0.75" },
+
+  { "if": "true", "limit_to": "max_speed" }
+]
 }
